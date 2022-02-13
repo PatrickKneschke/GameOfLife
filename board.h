@@ -4,11 +4,11 @@
 
 #include <QFrame>
 #include <QMouseEvent>
-#include <QPaintEvent>
+#include <QPainter>
 #include <QWidget>
 
 
-class Board : QFrame {
+class Board : public QFrame {
 public:
 	Board(QWidget *parent);
 	

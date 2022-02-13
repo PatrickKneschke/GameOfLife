@@ -12,7 +12,7 @@ namespace UI{
 
 class GameOfLife : public QWidget {
 public:
-	GameOfLife(QWidget *parent);
+	GameOfLife(QWidget *parent = nullptr);
 	~GameOfLife();
 	
 private:

@@ -14,6 +14,6 @@ void Board::mousePressEvent(QMouseEvent *event) {
 }
 
 
-void Board::paintEvent(QPaintevent *event) {
-
+void Board::paintEvent(QPaintEvent *event) {
+	
 }

@@ -3,7 +3,7 @@
 #include "gameoflife.h"
 
 
-GameOfLife(QWidget *parent) :
+GameOfLife::GameOfLife(QWidget *parent) :
 	QWidget(parent),
 	ui(new UI::GameOfLife)
 {
@@ -11,6 +11,6 @@ GameOfLife(QWidget *parent) :
 }
 
 
-~GameOfLife() {
+GameOfLife::~GameOfLife() {
 	delete ui;
 }
