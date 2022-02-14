@@ -2,6 +2,7 @@
 #include "board.h"
 
 #include <cstdlib>
+#include <time.h>
 
 #include <QDebug>
 
@@ -16,20 +17,29 @@ Board::Board(QWidget *parent) :
 	speed(1),
 	updateTimer(new QTimer(this))
 {
-	
-	zoom = 8;
+	zoom = 32;	
 	// test cells
-	srand(42);
-	for(unsigned int i=0; i<boardSize; i++) {
-		for(unsigned int j=0; j<boardSize; j++) {
-			if(rand() % 100 == 0)
-				cells[active][i][j] = true;
+	/*
+	// "Glider"
+	cells[active][1][2] = true;
+	cells[active][2][3] = true;
+	cells[active][3][1] = true;
+	cells[active][3][2] = true;
+	cells[active][3][3] = true;
+	*/
+
+	// random cells
+	srand(time(nullptr));
+	for(unsigned int y=0; y<boardSize; y++) {
+		for(unsigned int x=0; x<boardSize; x++) {
+			if(rand() % 20 == 0)
+				cells[active][y][x] = true;
 		}
-	}	
+	}
 	
 			
 	connect(updateTimer, &QTimer::timeout,
-			this, QOverload<>::of(&QWidget::update));
+			this, QOverload<>::of(&Board::update));
 }
 
 
@@ -49,12 +59,46 @@ void Board::paintEvent(QPaintEvent *event) {
 	// draw cells
 	painter.setPen(Qt::black);
 	painter.setBrush(Qt::black);
-	for(unsigned int i=0; i<boardSize/zoom; i++) {
-		for(unsigned int j=0; j<boardSize/zoom; j++) {
-			if(cells[active][viewX + i][viewY + j])
-				painter.drawRect(i*zoom, j*zoom, zoom, zoom);
+	for(unsigned int y=0; y<boardSize/zoom; y++) {
+		for(unsigned int x=0; x<boardSize/zoom; x++) {
+			if(cells[active][viewX + y][viewY + x])
+				painter.drawRect(x*zoom, y*zoom, zoom, zoom);
 		}
 	}
+}
+
+
+void Board::update() {
+	/* simulation update :
+		-> cells with less than 2 neighbors dies
+		-> cells with more than 3 neighbors dies
+		-> cells with exactly 3 neighbors becomes alive
+	*/
+	unsigned int inactive = (active == 0) ? 1 : 0;
+	for(unsigned int y=0; y<boardSize; y++) {
+		for(unsigned int x=0; x<boardSize; x++) {
+			int aliveCount = cellAt(x-1, y-1) + cellAt(x-1, y) + cellAt(x-1, y+1) + 
+							 cellAt(x, y-1)   + cellAt(x, y+1) + 
+							 cellAt(x+1, y-1) + cellAt(x+1, y) + cellAt(x+1, y+1);
+			if(aliveCount == 3)
+				cells[inactive][y][x] = true;
+			else if(aliveCount < 2 || aliveCount > 3)
+				cells[inactive][y][x] = false;
+			else 
+				cells[inactive][y][x] = cells[active][y][x];				
+		}
+	}
+	active = inactive;
+
+	QWidget::update();
+}
+
+
+int Board::cellAt(unsigned int x, unsigned int y) {
+	if(x<0 || x>=boardSize || y<0 || y>=boardSize || !cells[active][y][x])
+		return 0;
+	
+	return 1;
 }
 
 
@@ -84,4 +128,5 @@ void Board::zoomOut() {
 
 void Board::setSpeed(unsigned int s) {
 	speed = s;
+	updateTimer->setInterval(1000 / speed);
 }

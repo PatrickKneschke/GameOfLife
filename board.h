@@ -14,8 +14,9 @@ class Board : public QFrame {
 public:
 	Board(QWidget *parent);
 	
-	void mousePressEvent(QMouseEvent *event);
+	void mousePressEvent(QMouseEvent *event) override;
 	void paintEvent(QPaintEvent *event) override;
+	void update();
 	
 	
 	static constexpr unsigned int boardSize = 1024;
@@ -29,6 +30,9 @@ public slots:
 	void setSpeed(unsigned int s);
 	
 private:
+	int cellAt(unsigned int x, unsigned int y);
+	
+
 	QVector<QVector<bool>> cells[2];
 	unsigned int active;
 	unsigned int zoom;
