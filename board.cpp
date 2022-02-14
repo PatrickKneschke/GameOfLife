@@ -44,7 +44,14 @@ Board::Board(QWidget *parent) :
 
 
 void Board::mousePressEvent(QMouseEvent *event) {
-
+	if(event->button() == Qt::LeftButton) {
+		cells[active][viewY + event->y()/zoom][viewX + event->x()/zoom] = true;
+	}
+	if(event->button() == Qt::RightButton) {
+		cells[active][viewY + event->y()/zoom][viewX + event->x()/zoom] = false;
+	}
+	
+	QWidget::update();
 }
 
 
