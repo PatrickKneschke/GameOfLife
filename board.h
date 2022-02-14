@@ -5,6 +5,7 @@
 #include <QFrame>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QTimer>
 #include <QVector>
 #include <QWidget>
 
@@ -34,6 +35,8 @@ private:
 	unsigned int viewX;
 	unsigned int viewY;
 	unsigned int speed;
+	
+	QTimer *updateTimer;
 };
 
 

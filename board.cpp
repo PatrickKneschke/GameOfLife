@@ -3,6 +3,8 @@
 
 #include <cstdlib>
 
+#include <QDebug>
+
 
 Board::Board(QWidget *parent) :
 	QFrame(parent),
@@ -11,18 +13,23 @@ Board::Board(QWidget *parent) :
 	zoom(1),
 	viewX(0),
 	viewY(0),
-	speed(1)
+	speed(1),
+	updateTimer(new QTimer(this))
 {
 	
 	zoom = 8;
 	// test cells
 	srand(42);
-	for(int i=0; i<boardSize; i++) {
-		for(int j=0; j<boardSize; j++) {
+	for(unsigned int i=0; i<boardSize; i++) {
+		for(unsigned int j=0; j<boardSize; j++) {
 			if(rand() % 100 == 0)
 				cells[active][i][j] = true;
 		}
-	}
+	}	
+	
+			
+	connect(updateTimer, &QTimer::timeout,
+			this, QOverload<>::of(&QWidget::update));
 }
 
 
@@ -34,7 +41,7 @@ void Board::mousePressEvent(QMouseEvent *event) {
 void Board::paintEvent(QPaintEvent *event) {
 	QPainter painter(this);
 	
-	// clearckground
+	// clear background
 	painter.setPen(Qt::white);
 	painter.setBrush(Qt::white);
 	painter.drawRect(0, 0, boardSize, boardSize);
@@ -42,8 +49,8 @@ void Board::paintEvent(QPaintEvent *event) {
 	// draw cells
 	painter.setPen(Qt::black);
 	painter.setBrush(Qt::black);
-	for(int i=0; i<boardSize/zoom; i++) {
-		for(int j=0; j<boardSize/zoom; j++) {
+	for(unsigned int i=0; i<boardSize/zoom; i++) {
+		for(unsigned int j=0; j<boardSize/zoom; j++) {
 			if(cells[active][viewX + i][viewY + j])
 				painter.drawRect(i*zoom, j*zoom, zoom, zoom);
 		}
@@ -52,7 +59,10 @@ void Board::paintEvent(QPaintEvent *event) {
 
 
 void Board::toggleOnOff() {
-
+	if(updateTimer->isActive())
+		updateTimer->stop();
+	else
+		updateTimer->start(1000 / speed);
 }
 
 
