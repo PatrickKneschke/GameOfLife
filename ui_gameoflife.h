@@ -45,7 +45,7 @@ public:
 		speedSelect->setFixedSize(100, 100);
 		speedSelect->setFont(QFont("Arial", 20, QFont::Bold));
 		speedSelect->setAlignment(Qt::AlignCenter);
-		speedSelect->setRange(1, 4);
+		speedSelect->setRange(1, Board::maxSpeed);
 		
 		parent->setLayout(mainLayout);
 		mainLayout->addWidget(board,         0, Qt::AlignLeft);

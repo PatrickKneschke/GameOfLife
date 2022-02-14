@@ -20,7 +20,8 @@ public:
 	
 	
 	static constexpr unsigned int boardSize = 1024;
-	static constexpr unsigned int maxZoom = 32;
+	static constexpr unsigned int maxZoom 	= 32;
+	static constexpr unsigned int maxSpeed	= 10;
 	
 	
 public slots:
