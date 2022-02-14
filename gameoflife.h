@@ -15,7 +15,9 @@ public:
 	GameOfLife(QWidget *parent = nullptr);
 	~GameOfLife();
 	
-private:
+private:	
+	void setupConnections();
+	
 	UI::GameOfLife *ui;
 };
 

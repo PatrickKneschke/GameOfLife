@@ -18,14 +18,14 @@ public:
 	
 	
 	static constexpr unsigned int boardSize = 1024;
-	static constexpr unsigned int minViewSize = 32;
+	static constexpr unsigned int maxZoom = 32;
 	
 	
 public slots:
 	void toggleOnOff();
 	void zoomIn();
 	void zoomOut();
-	void setSpeed(int s);
+	void setSpeed(unsigned int s);
 	
 private:
 	QVector<QVector<bool>> cells[2];

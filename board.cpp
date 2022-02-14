@@ -34,7 +34,7 @@ void Board::mousePressEvent(QMouseEvent *event) {
 void Board::paintEvent(QPaintEvent *event) {
 	QPainter painter(this);
 	
-	// clear bckground
+	// clearckground
 	painter.setPen(Qt::white);
 	painter.setBrush(Qt::white);
 	painter.drawRect(0, 0, boardSize, boardSize);
@@ -48,4 +48,30 @@ void Board::paintEvent(QPaintEvent *event) {
 				painter.drawRect(i*zoom, j*zoom, zoom, zoom);
 		}
 	}
+}
+
+
+void Board::toggleOnOff() {
+
+}
+
+
+void Board::zoomIn() {
+	if(zoom == maxZoom)
+		return;
+	zoom *= 2;
+	update();
+}
+
+
+void Board::zoomOut() {
+	if(zoom == 1)
+		return;
+	zoom /= 2;
+	update();
+}
+
+
+void Board::setSpeed(unsigned int s) {
+	speed = s;
 }
