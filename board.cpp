@@ -15,6 +15,7 @@ Board::Board(QWidget *parent) :
 	viewX(0),
 	viewY(0),
 	speed(1),
+	running(false),
 	updateTimer(new QTimer(this))
 {
 	zoom = 32;	
@@ -32,7 +33,7 @@ Board::Board(QWidget *parent) :
 	srand(time(nullptr));
 	for(unsigned int y=0; y<boardSize; y++) {
 		for(unsigned int x=0; x<boardSize; x++) {
-			if(rand() % 20 == 0)
+			if(rand() % 10 == 0)
 				cells[active][y][x] = true;
 		}
 	}
@@ -68,7 +69,7 @@ void Board::paintEvent(QPaintEvent *event) {
 	painter.setBrush(Qt::black);
 	for(unsigned int y=0; y<boardSize/zoom; y++) {
 		for(unsigned int x=0; x<boardSize/zoom; x++) {
-			if(cells[active][viewX + y][viewY + x])
+			if(cells[active][viewY + y][viewX + x])
 				painter.drawRect(x*zoom, y*zoom, zoom, zoom);
 		}
 	}
@@ -101,6 +102,11 @@ void Board::update() {
 }
 
 
+bool Board::isRunning() {
+	return running;
+}
+
+
 int Board::cellAt(unsigned int x, unsigned int y) {
 	if(x<0 || x>=boardSize || y<0 || y>=boardSize || !cells[active][y][x])
 		return 0;
@@ -110,10 +116,14 @@ int Board::cellAt(unsigned int x, unsigned int y) {
 
 
 void Board::toggleOnOff() {
-	if(updateTimer->isActive())
+	if(running) {
 		updateTimer->stop();
-	else
+		running = false;
+	}
+	else {
 		updateTimer->start(1000 / speed);
+		running = true;	
+	}
 }
 
 

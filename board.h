@@ -17,6 +17,7 @@ public:
 	void mousePressEvent(QMouseEvent *event) override;
 	void paintEvent(QPaintEvent *event) override;
 	void update();
+	bool isRunning();
 	
 	
 	static constexpr unsigned int boardSize = 1024;
@@ -40,7 +41,7 @@ private:
 	unsigned int viewX;
 	unsigned int viewY;
 	unsigned int speed;
-	
+	bool running;
 	QTimer *updateTimer;
 };
 

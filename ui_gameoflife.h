@@ -28,14 +28,17 @@ public:
 		controlsLayout 	= new QVBoxLayout(controlsFrame);
 		controlsLayout->setAlignment(Qt::AlignTop);
 		
-		startButton		= new QPushButton(controlsFrame);
+		startButton		= new QPushButton(QIcon("icons/play.png"), "", controlsFrame);
 		startButton->setFixedSize(100, 100);
+		startButton->setIconSize(QSize(80, 80));
 		
-		zoomInButton	= new QPushButton(controlsFrame);
+		zoomInButton	= new QPushButton(QIcon("icons/zoom_in.png"), "", controlsFrame);
 		zoomInButton->setFixedSize(100, 100);
+		zoomInButton->setIconSize(QSize(80, 80));
 		
-		zoomOutButton	= new QPushButton(controlsFrame);
+		zoomOutButton	= new QPushButton(QIcon("icons/zoom_out.png"), "", controlsFrame);
 		zoomOutButton->setFixedSize(100, 100);
+		zoomOutButton->setIconSize(QSize(80, 80));
 		
 		speedLabel		= new QLabel("Speed", controlsFrame);
 		speedLabel->setFont(QFont("Arial", 12, QFont::Bold));
@@ -56,6 +59,10 @@ public:
 		controlsLayout->addWidget(zoomOutButton, 0, Qt::AlignCenter);
 		controlsLayout->addWidget(speedLabel,    0, Qt::AlignCenter);
 		controlsLayout->addWidget(speedSelect,   0, Qt::AlignCenter);
+		
+		QObject::connect(startButton, &QPushButton::clicked, [&](){
+			startButton->setIcon( board->isRunning() ? QIcon("icons/play.png") : QIcon("icons/pause.png"));
+		});
 	}
 	
 	
