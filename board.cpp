@@ -19,17 +19,8 @@ Board::Board(QWidget *parent) :
 	updateTimer(new QTimer(this))
 {
 	zoom = 32;	
-	// test cells
 	/*
-	// "Glider"
-	cells[active][1][2] = true;
-	cells[active][2][3] = true;
-	cells[active][3][1] = true;
-	cells[active][3][2] = true;
-	cells[active][3][3] = true;
-	*/
-
-	// random cells
+	// test cells
 	srand(time(nullptr));
 	for(unsigned int y=0; y<boardSize; y++) {
 		for(unsigned int x=0; x<boardSize; x++) {
@@ -37,22 +28,46 @@ Board::Board(QWidget *parent) :
 				cells[active][y][x] = true;
 		}
 	}
-	
+	*/
 			
 	connect(updateTimer, &QTimer::timeout,
 			this, QOverload<>::of(&Board::update));
 }
 
 
-void Board::mousePressEvent(QMouseEvent *event) {
-	if(event->button() == Qt::LeftButton) {
-		cells[active][viewY + event->y()/zoom][viewX + event->x()/zoom] = true;
-	}
-	if(event->button() == Qt::RightButton) {
-		cells[active][viewY + event->y()/zoom][viewX + event->x()/zoom] = false;
-	}
+void Board::mouseMoveEvent(QMouseEvent *event) {
+	int dx = event->x() - lastPos.x();
+	int dy = event->y() - lastPos.y();
+	if(qAbs(dx) >= zoom || qAbs(dy) >= zoom) {		
+		dx /= static_cast<int>(zoom);
+		dy /= static_cast<int>(zoom);
 	
-	QWidget::update();
+		if(viewX - dx >= 0 && viewX - dx < boardSize - boardSize/zoom)
+			viewX -= dx;
+		if(viewY - dy >= 0 && viewY - dy < boardSize - boardSize/zoom)
+			viewY -= dy;
+			
+		lastPos = event->pos();
+		QWidget::update();
+	}
+}
+
+
+void Board::mousePressEvent(QMouseEvent *event) {
+	lastPos = event->pos();
+}
+
+
+void Board::mouseReleaseEvent(QMouseEvent *event) {
+	if(lastPos == event->pos()) {
+		if(event->button() == Qt::LeftButton) {
+			cells[active][viewY + event->y()/zoom][viewX + event->x()/zoom] = true;
+		}
+		if(event->button() == Qt::RightButton) {
+			cells[active][viewY + event->y()/zoom][viewX + event->x()/zoom] = false;
+		}
+		QWidget::update();
+	}
 }
 
 
@@ -78,9 +93,9 @@ void Board::paintEvent(QPaintEvent *event) {
 
 void Board::update() {
 	/* simulation update :
-		-> cells with less than 2 neighbors dies
-		-> cells with more than 3 neighbors dies
-		-> cells with exactly 3 neighbors becomes alive
+		-> cell with less than 2 neighbors dies
+		-> cell with more than 3 neighbors dies
+		-> cell with exactly 3 neighbors becomes alive
 	*/
 	unsigned int inactive = (active == 0) ? 1 : 0;
 	for(unsigned int y=0; y<boardSize; y++) {
@@ -130,16 +145,31 @@ void Board::toggleOnOff() {
 void Board::zoomIn() {
 	if(zoom == maxZoom)
 		return;
+		
 	zoom *= 2;
-	update();
+	viewX += boardSize/zoom/2;
+	viewY += boardSize/zoom/2;
+	
+	QWidget::update();
 }
 
 
 void Board::zoomOut() {
 	if(zoom == 1)
 		return;
-	zoom /= 2;
-	update();
+		
+	// update view
+	if(viewX >= boardSize/zoom/2)
+		viewX -= boardSize/zoom/2;
+	else
+		viewX = 0;
+	if(viewY >= boardSize/zoom/2)
+		viewY -= boardSize/zoom/2;
+	else
+		viewY = 0;
+		
+	zoom /= 2;	
+	QWidget::update();
 }
 
 

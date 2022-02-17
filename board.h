@@ -14,7 +14,9 @@ class Board : public QFrame {
 public:
 	Board(QWidget *parent);
 	
+	void mouseMoveEvent(QMouseEvent *event) override;
 	void mousePressEvent(QMouseEvent *event) override;
+	void mouseReleaseEvent(QMouseEvent *event) override;
 	void paintEvent(QPaintEvent *event) override;
 	void update();
 	bool isRunning();
@@ -43,6 +45,8 @@ private:
 	unsigned int speed;
 	bool running;
 	QTimer *updateTimer;
+	
+	QPoint lastPos;
 };
 
 
