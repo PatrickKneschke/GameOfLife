@@ -164,14 +164,19 @@ void Board::zoomOut() {
 		return;
 		
 	// update view
-	if(viewX >= boardSize/zoom/2)
+	if(viewX >= boardSize/zoom/2 && viewX + boardSize/zoom*3/2 < boardSize)
 		viewX -= boardSize/zoom/2;
-	else
+	else if(viewX < boardSize/zoom/2)
 		viewX = 0;
-	if(viewY >= boardSize/zoom/2)
-		viewY -= boardSize/zoom/2;
 	else
+		viewX = boardSize - 2*boardSize/zoom;		
+	
+	if(viewY >= boardSize/zoom/2 && viewY + boardSize/zoom*3/2 < boardSize)
+		viewY -= boardSize/zoom/2;
+	else if(viewY < boardSize/zoom/2)
 		viewY = 0;
+	else
+		viewY = boardSize - 2*boardSize/zoom;
 		
 	zoom /= 2;	
 	QWidget::update();
