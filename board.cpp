@@ -2,6 +2,7 @@
 #include "board.h"
 
 #include <cstdlib>
+#include <thread>
 #include <time.h>
 
 #include <QDebug>
@@ -17,19 +18,7 @@ Board::Board(QWidget *parent) :
 	speed(1),
 	running(false),
 	updateTimer(new QTimer(this))
-{
-	zoom = 32;	
-	/*
-	// test cells
-	srand(time(nullptr));
-	for(unsigned int y=0; y<boardSize; y++) {
-		for(unsigned int x=0; x<boardSize; x++) {
-			if(rand() % 10 == 0)
-				cells[active][y][x] = true;
-		}
-	}
-	*/
-			
+{			
 	connect(updateTimer, &QTimer::timeout,
 			this, QOverload<>::of(&Board::update));
 }
@@ -97,23 +86,39 @@ void Board::update() {
 		-> cell with more than 3 neighbors dies
 		-> cell with exactly 3 neighbors becomes alive
 	*/
-	unsigned int inactive = (active == 0) ? 1 : 0;
-	for(unsigned int y=0; y<boardSize; y++) {
-		for(unsigned int x=0; x<boardSize; x++) {
-			int aliveCount = cellAt(x-1, y-1) + cellAt(x-1, y) + cellAt(x-1, y+1) + 
-							 cellAt(x, y-1)   + cellAt(x, y+1) + 
-							 cellAt(x+1, y-1) + cellAt(x+1, y) + cellAt(x+1, y+1);
-			if(aliveCount == 3)
-				cells[inactive][y][x] = true;
-			else if(aliveCount < 2 || aliveCount > 3)
-				cells[inactive][y][x] = false;
-			else 
-				cells[inactive][y][x] = cells[active][y][x];				
-		}
+	
+	unsigned int threadCount = std::thread::hardware_concurrency();
+	std::vector<std::thread> threads;
+	for(int i=0; i<threadCount; i++) {
+		threads.emplace_back([this, i, threadCount](){
+			updateRegion(0, i*boardSize/threadCount, boardSize, boardSize/threadCount);
+		});
 	}
-	active = inactive;
+	for(auto &t : threads) {
+		t.join();			
+	}	
+	
+	active = active == 0 ? 1 : 0;
 
 	QWidget::update();
+}
+
+
+void Board::updateRegion(unsigned int x, unsigned int y, unsigned int w, unsigned int h) {
+	unsigned int inactive = (active == 0) ? 1 : 0;
+	for(unsigned int i=y; i<y+h; i++) {
+		for(unsigned int j=x; j<x+w; j++) {
+			int aliveCount = cellAt(j-1, i-1) + cellAt(j-1, i) + cellAt(j-1, i+1) + 
+							 cellAt(j, i-1)   + cellAt(j, i+1) + 
+							 cellAt(j+1, i-1) + cellAt(j+1, i) + cellAt(j+1, i+1);
+			if(aliveCount == 3)
+				cells[inactive][i][j] = true;
+			else if(aliveCount < 2 || aliveCount > 3)
+				cells[inactive][i][j] = false;
+			else 
+				cells[inactive][i][j] = cells[active][i][j];				
+		}
+	}
 }
 
 

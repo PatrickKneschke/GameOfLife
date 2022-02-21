@@ -11,6 +11,7 @@ namespace UI{
 
 
 class GameOfLife : public QWidget {
+	Q_OBJECT
 public:
 	GameOfLife(QWidget *parent = nullptr);
 	~GameOfLife();
